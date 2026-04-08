@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>test</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    overflow: hidden;
+  }
+
+  .wrap {
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 30px;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border: 2px solid black;
+    margin: 10px;
+    text-decoration: none;
+    color: black;
+  }
+
+  #no {
+    position: absolute;
+  }
+</style>
+</head>
+<body>
+
+//중앙 텍스트
+<div class="wrap">
+  <h1>나랑 놀아</h1>
+
+// 텍스트
+  <a class="btn" href="#">놀자</a>
+  <a class="btn" id="no" href="#">싫어</a>
+</div>
+
+<script>
+const no = document.getElementById("no");
+
+let mx = 0;
+let my = 0;
+let active = false;
+
+// 좌표에 따른 움직임
+let x, y;
+
+function init() {
+  const r = no.getBoundingClientRect();
+  x = window.innerWidth / 2 - r.width / 2;
+  y = window.innerHeight / 2 + 50;
+  no.style.left = x + "px";
+  no.style.top = y + "px";
+}
+init();
+
+// 마우스
+document.addEventListener("mousemove", e => {
+  mx = e.clientX;
+  my = e.clientY;
+  active = true;
+});
+
+// 터치
+document.addEventListener("touchmove", e => {
+  const t = e.touches[0];
+  mx = t.clientX;
+  my = t.clientY;
+  active = true;
+});
+
+function loop() {
+  if (!active) {
+    requestAnimationFrame(loop);
+    return;
+  }
+
+  const r = no.getBoundingClientRect();
+
+  let cx = x + r.width / 2;
+  let cy = y + r.height / 2;
+
+  let dx = cx - mx;
+  let dy = cy - my;
+
+  let dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist < 1) dist = 1;
+
+  dx /= dist;
+  dy /= dist;
+
+  let speed = 0;
+
+  if (dist < 300) {
+    speed = (300 - dist) * 0.35;
+  }
+
+  x += dx * speed;
+  y += dy * speed;
+
+  // 화면 제한
+  if (x < 0) x = 0;
+  if (x > window.innerWidth - r.width) x = window.innerWidth - r.width;
+  if (y < 0) y = 0;
+  if (y > window.innerHeight - r.height) y = window.innerHeight - r.height;
+
+  no.style.left = x + "px";
+  no.style.top = y + "px";
+
+  requestAnimationFrame(loop);
+}
+
+loop();
+
+// 클릭 시 새로고침
+no.addEventListener("click", e => {
+  e.preventDefault();
+  location.reload();
+});
+</script>
+
+</body>
+</html>
